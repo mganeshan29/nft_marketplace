@@ -1,5 +1,6 @@
 import Navbar from './Navbar';
 import Footer from './Footer';
-import images from '../assets';
+import Button from './Button';
+import Banner from './Banner';
 
-export { Navbar, Footer };
+export { Navbar, Footer, Button, Banner };
