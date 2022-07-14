@@ -1,4 +1,4 @@
-export const makeId = (length) => {
+export const makeid = (length) => {
   let result = '';
 
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -10,3 +10,4 @@ export const makeId = (length) => {
 
   return result;
 };
+

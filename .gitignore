@@ -40,4 +40,6 @@ typechain
 #Hardhat files
 cache
 artifacts
+
+#others
 .secret
