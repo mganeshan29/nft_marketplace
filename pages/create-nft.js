@@ -1,24 +1,56 @@
 import { useState, useMemo, useCallback, useContext } from 'react';
-
+import { create as ipfsHttpClient } from 'ipfs-http-client';
 import { useRouter } from 'next/router';
 import { useDropzone } from 'react-dropzone';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
-import images from '../assets';
-import { Button, Input } from '../components';
 
-const CreateNFT = () => {
+import { NFTContext } from '../context/NFTContext';
+import { Button, Input, Loader } from '../components';
+import images from '../assets';
+
+const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0');
+
+const CreateItem = () => {
+  const { createSale, isLoadingNFT } = useContext(NFTContext);
   const [fileUrl, setFileUrl] = useState(null);
   const { theme } = useTheme();
 
-  const onDrop = useCallback(async () => {
+  const uploadToInfura = async (file) => {
+    try {
+      const added = await client.add({ content: file });
 
+      const url = `https://ipfs.infura.io/ipfs/${added.path}`;
+
+      setFileUrl(url);
+    } catch (error) {
+      console.log('Error uploading file: ', error);
+    }
+  };
+
+  const onDrop = useCallback(async (acceptedFile) => {
+    await uploadToInfura(acceptedFile[0]);
   }, []);
+
   const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({
     onDrop,
     accept: 'image/*',
     maxSize: 5000000,
   });
+
+  // add tailwind classes acording to the file status
+  const fileStyle = useMemo(
+    () => (
+      `dark:bg-nft-black-1 bg-white border dark:border-white border-nft-gray-2 flex flex-col items-center p-5 rounded-sm border-dashed  
+       ${isDragActive ? ' border-file-active ' : ''} 
+       ${isDragAccept ? ' border-file-accept ' : ''} 
+       ${isDragReject ? ' border-file-reject ' : ''}`),
+    [isDragActive, isDragReject, isDragAccept],
+  );
+
+  const [formInput, updateFormInput] = useState({ price: '', name: '', description: '' });
+  const router = useRouter();
+
   const createMarket = async () => {
     const { name, description, price } = formInput;
     if (!name || !description || !price || !fileUrl) return;
@@ -34,14 +66,14 @@ const CreateNFT = () => {
       console.log('Error uploading file: ', error);
     }
   };
-  const fileStyle = useMemo(
-    () => (
-      `dark:bg-nft-black-1 bg-white border dark:border-white border-nft-gray-2 flex flex-col items-center p-5 rounded-sm border-dashed  
-       ${isDragActive ? ' border-file-active ' : ''} 
-       ${isDragAccept ? ' border-file-accept ' : ''} 
-       ${isDragReject ? ' border-file-reject ' : ''}`),
-    [isDragActive, isDragReject, isDragAccept],
-  );
+
+  if (isLoadingNFT) {
+    return (
+      <div className="flexCenter" style={{ height: '51vh' }}>
+        <Loader />
+      </div>
+    );
+  }
 
   return (
     <div className="flex justify-center sm:px-4 p-12">
@@ -63,7 +95,7 @@ const CreateNFT = () => {
                     height={100}
                     objectFit="contain"
                     alt="file upload"
-                    className={theme === 'light' && 'filter invert'}
+                    className={theme === 'light' ? 'filter invert' : undefined}
                   />
                 </div>
 
@@ -110,11 +142,12 @@ const CreateNFT = () => {
             btnName="Create Item"
             btnType="primary"
             classStyles="rounded-xl"
-            handleClick={() => { }}
+            handleClick={createMarket}
           />
         </div>
       </div>
     </div>
   );
 };
-export default CreateNFT;
+
+export default CreateItem;
