@@ -9,6 +9,7 @@ import { Button, Input } from '../components';
 
 const CreateNFT = () => {
   const [fileUrl, setFileUrl] = useState(null);
+  const [formInput, setFormInput] = useState({ price: '', description: '' });
   const { theme } = useTheme();
 
   const onDrop = useCallback(async () => {
@@ -19,21 +20,7 @@ const CreateNFT = () => {
     accept: 'image/*',
     maxSize: 5000000,
   });
-  const createMarket = async () => {
-    const { name, description, price } = formInput;
-    if (!name || !description || !price || !fileUrl) return;
-    /* first, upload to IPFS */
-    const data = JSON.stringify({ name, description, image: fileUrl });
-    try {
-      const added = await client.add(data);
-      const url = `https://ipfs.infura.io/ipfs/${added.path}`;
-      /* after file is uploaded to IPFS, pass the URL to save it on Polygon */
-      await createSale(url, formInput.price);
-      router.push('/');
-    } catch (error) {
-      console.log('Error uploading file: ', error);
-    }
-  };
+
   const fileStyle = useMemo(
     () => (
       `dark:bg-nft-black-1 bg-white border dark:border-white border-nft-gray-2 flex flex-col items-center p-5 rounded-sm border-dashed  
@@ -42,7 +29,7 @@ const CreateNFT = () => {
        ${isDragReject ? ' border-file-reject ' : ''}`),
     [isDragActive, isDragReject, isDragAccept],
   );
-
+  console.log(formInput);
   return (
     <div className="flex justify-center sm:px-4 p-12">
       <div className="w-3/5 md:w-full">
@@ -87,29 +74,26 @@ const CreateNFT = () => {
         <Input
           inputType="input"
           title="Name"
-          placeholder="Asset Name"
-          handleClick={(e) => updateFormInput({ ...formInput, name: e.target.value })}
+          placeholder="NFT name"
+          handleClick={(e) => setFormInput({ ...formInput, name: e.target.value })}
         />
-
         <Input
           inputType="textarea"
           title="Description"
-          placeholder="Asset Description"
-          handleClick={(e) => updateFormInput({ ...formInput, description: e.target.value })}
+          placeholder="NFT description"
+          handleClick={(e) => setFormInput({ ...formInput, description: e.target.value })}
         />
-
         <Input
           inputType="number"
           title="Price"
-          placeholder="Asset Price"
-          handleClick={(e) => updateFormInput({ ...formInput, price: e.target.value })}
+          placeholder="NFT Price"
+          handleClick={(e) => setFormInput({ ...formInput, price: e.target.value })}
         />
 
         <div className="mt-7 w-full flex justify-end">
           <Button
-            btnName="Create Item"
-            btnType="primary"
-            classStyles="rounded-xl"
+            btnName="Create NFT"
+            classStyles="rounded-xl py-3"
             handleClick={() => { }}
           />
         </div>
@@ -117,4 +101,6 @@ const CreateNFT = () => {
     </div>
   );
 };
+
 export default CreateNFT;
+
