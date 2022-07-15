@@ -12,7 +12,7 @@ Tech and tools used
 - Front End : React.js and Next.js
 - Web3 : Solidity, ethers and Hardhat
 
-![Alt text](assets\6_1625399047235.jpg?raw=true "Title")|![Alt text](assets\6_1625399047237.jpg?raw=true "Title")
+![Alt text](https://github.com/mganeshan29/nft_marketplace/blob/main/assets/6_1625399047221.jpg?raw=true "Title")|![Alt text](https://github.com/mganeshan29/nft_marketplace/blob/main/assets/6_1625399047235.jpg?raw=true "Title")
 
 
 ## 🛠 Installation & Set Up
